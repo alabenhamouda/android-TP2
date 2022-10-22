@@ -3,15 +3,25 @@ package com.example.tp2
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tp2.models.GenderEnum
 import com.example.tp2.models.Student
+import java.util.*
+import kotlin.collections.ArrayList
 
-class StudentAdapter (private val students: Array<Student>) : RecyclerView.Adapter<StudentAdapter.ViewHolder>()
+class StudentAdapter (private val students: ArrayList<Student>) :
+    RecyclerView.Adapter<StudentAdapter.ViewHolder>(),
+    Filterable
 {
+    private var dataFilterList: ArrayList<Student>
 
+    init {
+        dataFilterList = students
+    }
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val txtFullName: TextView
         private val photo: ImageView
@@ -42,9 +52,39 @@ class StudentAdapter (private val students: Array<Student>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: StudentAdapter.ViewHolder, position: Int) {
-        val student = students[position]
+        val student = dataFilterList[position]
         holder.bind(student)
     }
 
-    override fun getItemCount(): Int = students.size
+    override fun getItemCount(): Int = dataFilterList.size
+
+    override fun getFilter(): Filter {
+        return object : Filter(){
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    dataFilterList = students
+                } else {
+                    val resultList = ArrayList<Student>()
+                    for (student in students) {
+                        if (student.getFullName().lowercase(Locale.ROOT)
+                                .contains(charSearch.lowercase(Locale.ROOT))
+                        ) {
+                            resultList.add(student)
+                        }
+                    }
+                    dataFilterList = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = dataFilterList
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                dataFilterList = results?.values as ArrayList<Student>
+                notifyDataSetChanged()
+            }
+
+        }
+    }
 }

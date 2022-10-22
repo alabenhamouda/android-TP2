@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val students = arrayOf<Student>(
+        val students = arrayListOf<Student>(
             Student("degla", "fsfs", GenderEnum.Male),
             Student("kaabi", "taoufik", GenderEnum.Male),
             Student("mra", "mra", GenderEnum.Female)
