@@ -22,6 +22,7 @@ class StudentAdapter (private val students: ArrayList<Student>) :
     init {
         dataFilterList = students
     }
+
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val txtFullName: TextView
         private val photo: ImageView

@@ -19,6 +19,10 @@ import com.example.tp2.models.Student
 
 class MainActivity : AppCompatActivity() {
     val spinner: Spinner by lazy { findViewById(R.id.spinner) }
+    val studentsRecyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.studentsView) }
+    val txtSearchCriteria: EditText by lazy { findViewById(R.id.searchCriteria) }
+    lateinit var currentAdapter: StudentAdapter
+    lateinit var adapters: Array<StudentAdapter>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,24 +38,25 @@ class MainActivity : AppCompatActivity() {
                     adapterView?.getItemAtPosition(position).toString(),
                     Toast.LENGTH_SHORT)
                 toast.show()
+
+                switchToAdapter(position)
             }
             override fun onNothingSelected(adapterView: AdapterView<*>?) {
             }
         }
 
-        val students = arrayListOf<Student>(
-            Student("degla", "fsfs", GenderEnum.Male),
-            Student("kaabi", "taoufik", GenderEnum.Male),
-            Student("mra", "mra", GenderEnum.Female)
+        adapters = arrayOf(
+            StudentAdapter(arrayListOf(
+                Student("mostfa", "saad", GenderEnum.Male),
+                Student("kaabi", "taoufik", GenderEnum.Male),
+            )),
+            StudentAdapter(arrayListOf(
+                Student("mra", "mra", GenderEnum.Female)
+            ))
         )
 
-        val studentsRecyclerView = findViewById<RecyclerView>(R.id.studentsView)
-        studentsRecyclerView.adapter = StudentAdapter(students)
         studentsRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        val txtSearchCriteria: EditText = findViewById(R.id.searchCriteria)
-
-        val filter = (studentsRecyclerView.adapter as StudentAdapter).filter
+        switchToAdapter(0)
 
         txtSearchCriteria.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -61,8 +66,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filter.filter(s)
+                currentAdapter.filter.filter(s)
             }
         })
+    }
+
+    fun switchToAdapter(idx: Int) {
+        if (idx < 0 || idx >= adapters.size) {
+            return
+        }
+
+        currentAdapter = adapters[idx]
+        studentsRecyclerView.adapter = currentAdapter
+        currentAdapter.filter.filter(txtSearchCriteria.text.toString())
     }
 }
