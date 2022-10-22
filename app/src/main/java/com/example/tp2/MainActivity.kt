@@ -2,10 +2,14 @@ package com.example.tp2
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,5 +48,21 @@ class MainActivity : AppCompatActivity() {
         val studentsRecyclerView = findViewById<RecyclerView>(R.id.studentsView)
         studentsRecyclerView.adapter = StudentAdapter(students)
         studentsRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        val txtSearchCriteria: EditText = findViewById(R.id.searchCriteria)
+
+        val filter = (studentsRecyclerView.adapter as StudentAdapter).filter
+
+        txtSearchCriteria.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filter.filter(s)
+            }
+        })
     }
 }
